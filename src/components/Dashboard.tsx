@@ -3,7 +3,9 @@
 
 "use client";
 
+import { useState } from "react";
 import Header from "./ Header";
+import UploadModal from "@/components/UploadModal";
 import { activityData } from "@/data/activity-data";
 import { emissionFactors } from "@/data/emission-factors";
 import {
@@ -13,10 +15,14 @@ import {
   getEmissionByScope,
   getTotalEmission,
 } from "@/lib/carbon";
+import type { ActivityRecord } from "@/types/emission";
 import styles from "@/styles/Dashboard.module.css";
 
 export default function Dashboard() {
-  const calculatedData = calculateAllEmissions(activityData, emissionFactors);
+  const [records, setRecords] = useState<ActivityRecord[]>(activityData);
+  const [isUploadOpen, setIsUploadOpen] = useState(false);
+
+  const calculatedData = calculateAllEmissions(records, emissionFactors);
 
   const totalEmission = getTotalEmission(calculatedData);
   const emissionByScope = getEmissionByScope(calculatedData);
@@ -34,13 +40,15 @@ export default function Dashboard() {
     ...monthEntries.map(([, value]) => value),
   );
 
-  const handleAddDataClick = () => {
-    alert("엑셀 업로드 기능은 다음 단계에서 연결할 예정입니다.");
-  };
-
   return (
     <main className={styles.page}>
-      <Header onAddDataClick={handleAddDataClick} />
+      <Header onAddDataClick={() => setIsUploadOpen(true)} />
+
+      <UploadModal
+        isOpen={isUploadOpen}
+        onClose={() => setIsUploadOpen(false)}
+        onUpload={setRecords}
+      />
 
       <div className={styles.container}>
         <section className={styles.heroGrid}>
@@ -79,8 +87,8 @@ export default function Dashboard() {
 
             <p className={styles.summaryText}>
               기본 화면은 회사 제공 과제 데이터를 기반으로 표시됩니다. 다른
-              데이터를 분석하려면 상단의 + Add Data를 통해 엑셀 업로드 흐름으로
-              확장할 수 있습니다.
+              데이터를 분석하려면 상단의 + Add Data를 통해 엑셀 파일을 업로드할
+              수 있습니다.
             </p>
           </div>
         </section>
@@ -108,7 +116,7 @@ export default function Dashboard() {
             label="Records"
             value={calculatedData.length.toString()}
             unit="rows"
-            caption="과제용 활동 데이터"
+            caption="현재 분석 중인 활동 데이터"
           />
         </section>
 
@@ -120,61 +128,21 @@ export default function Dashboard() {
               비교합니다.
             </p>
 
-            <div
-              style={{
-                marginTop: 32,
-                display: "flex",
-                alignItems: "end",
-                justifyContent: "space-around",
-                gap: 24,
-                height: 280,
-              }}
-            >
+            <div className={styles.barChart}>
               {activityEntries.map(([type, value]) => {
                 const height = (value / maxActivityEmission) * 100;
 
                 return (
-                  <div
-                    key={type}
-                    style={{
-                      flex: 1,
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: "100%",
-                        maxWidth: 80,
-                        height: 220,
-                        borderRadius: 24,
-                        border: "1px solid #d1fae5",
-                        background: "#ecfdf5",
-                        display: "flex",
-                        alignItems: "end",
-                        overflow: "hidden",
-                      }}
-                    >
+                  <div key={type} className={styles.barItem}>
+                    <div className={styles.barTrack}>
                       <div
-                        style={{
-                          width: "100%",
-                          height: `${height}%`,
-                          borderRadius: 24,
-                          background:
-                            "linear-gradient(to top, #059669, #6ee7b7)",
-                        }}
+                        className={styles.barFill}
+                        style={{ height: `${height}%` }}
                       />
                     </div>
 
-                    <p style={{ marginTop: 16, fontWeight: 900 }}>{type}</p>
-                    <p
-                      style={{
-                        marginTop: 4,
-                        color: "#64748b",
-                        fontWeight: 700,
-                      }}
-                    >
+                    <p className={styles.barLabel}>{type}</p>
+                    <p className={styles.barValue}>
                       {value.toLocaleString()} kg
                     </p>
                   </div>
@@ -189,40 +157,9 @@ export default function Dashboard() {
               전기 사용은 Scope 2, 원소재와 운송은 Scope 3로 분류합니다.
             </p>
 
-            <div
-              style={{
-                marginTop: 40,
-                display: "grid",
-                gridTemplateColumns: "200px 1fr",
-                gap: 32,
-                alignItems: "center",
-              }}
-            >
-              <div
-                style={{
-                  position: "relative",
-                  width: 192,
-                  height: 192,
-                  borderRadius: "50%",
-                  background: "conic-gradient(#059669 0 92%, #a7f3d0 92% 100%)",
-                }}
-              >
-                <div
-                  style={{
-                    position: "absolute",
-                    inset: 48,
-                    borderRadius: "50%",
-                    background: "white",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: "#047857",
-                    fontSize: 32,
-                    fontWeight: 900,
-                  }}
-                >
-                  92%
-                </div>
+            <div className={styles.scopeLayout}>
+              <div className={styles.scopeDonut}>
+                <div className={styles.scopeDonutInner}>92%</div>
               </div>
 
               <div>
@@ -241,42 +178,25 @@ export default function Dashboard() {
           </div>
         </section>
 
-        <section className={styles.card} style={{ marginTop: 24 }}>
+        <section className={styles.cardLarge}>
           <h2 className={styles.sectionTitle}>월별 배출량 추이</h2>
           <p className={styles.sectionDesc}>
             2025년 월별 활동 데이터 기반 배출량입니다.
           </p>
 
-          <div style={{ marginTop: 24 }}>
+          <div className={styles.monthList}>
             {monthEntries.map(([month, value]) => (
-              <div key={month} style={{ marginBottom: 18 }}>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    marginBottom: 8,
-                    fontSize: 14,
-                    fontWeight: 800,
-                  }}
-                >
+              <div key={month} className={styles.monthItem}>
+                <div className={styles.monthHeader}>
                   <span>{month}</span>
                   <span>{value.toLocaleString()} kgCO₂e</span>
                 </div>
 
-                <div
-                  style={{
-                    height: 12,
-                    borderRadius: 999,
-                    background: "#ecfdf5",
-                    overflow: "hidden",
-                  }}
-                >
+                <div className={styles.monthTrack}>
                   <div
+                    className={styles.monthFill}
                     style={{
                       width: `${(value / maxMonthlyEmission) * 100}%`,
-                      height: "100%",
-                      borderRadius: 999,
-                      background: "linear-gradient(to right, #6ee7b7, #059669)",
                     }}
                   />
                 </div>
@@ -285,7 +205,7 @@ export default function Dashboard() {
           </div>
         </section>
 
-        <section className={styles.card} style={{ marginTop: 24 }}>
+        <section className={styles.cardLarge}>
           <h2 className={styles.sectionTitle}>계산 결과 테이블</h2>
           <p className={styles.sectionDesc}>
             원본 활동 데이터에 배출계수를 매칭한 계산 결과입니다.
@@ -343,25 +263,14 @@ function MetricCard({
 }) {
   return (
     <div className={styles.card}>
-      <p style={{ color: "#64748b", fontSize: 14, fontWeight: 900 }}>{label}</p>
+      <p className={styles.metricLabel}>{label}</p>
 
-      <div style={{ marginTop: 20 }}>
-        <span style={{ fontSize: 32, fontWeight: 900 }}>{value}</span>
-        <span
-          style={{
-            marginLeft: 4,
-            color: "#64748b",
-            fontSize: 14,
-            fontWeight: 700,
-          }}
-        >
-          {unit}
-        </span>
+      <div className={styles.metricValueWrap}>
+        <span className={styles.metricValue}>{value}</span>
+        <span className={styles.metricUnit}>{unit}</span>
       </div>
 
-      <p style={{ marginTop: 12, color: "#047857", fontWeight: 900 }}>
-        {caption}
-      </p>
+      <p className={styles.metricCaption}>{caption}</p>
     </div>
   );
 }
@@ -376,31 +285,13 @@ function ScopeRow({
   color: string;
 }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        paddingBottom: 16,
-        marginBottom: 16,
-        borderBottom: "1px solid #ecfdf5",
-      }}
-    >
-      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-        <span
-          style={{
-            width: 12,
-            height: 12,
-            borderRadius: "50%",
-            background: color,
-          }}
-        />
-        <span style={{ fontWeight: 900 }}>{label}</span>
+    <div className={styles.scopeRow}>
+      <div className={styles.scopeLabelWrap}>
+        <span className={styles.scopeDot} style={{ background: color }} />
+        <span>{label}</span>
       </div>
 
-      <span style={{ color: "#047857", fontWeight: 900 }}>
-        {value.toLocaleString()} kg
-      </span>
+      <span className={styles.scopeValue}>{value.toLocaleString()} kg</span>
     </div>
   );
 }

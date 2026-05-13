@@ -1,4 +1,4 @@
-/* src/components/Dashboard.module.css */
+/* src/styles/Dashboard.module.css */
 /* CarbonFlow 대시보드 전용 스타일 파일입니다. */
 
 .page {
@@ -63,6 +63,7 @@
   border-radius: 999px;
   font-size: 14px;
   font-weight: 800;
+  cursor: pointer;
 }
 
 .primaryButton {
@@ -73,6 +74,7 @@
   border-radius: 999px;
   font-size: 14px;
   font-weight: 800;
+  cursor: pointer;
   box-shadow: 0 12px 24px rgba(16, 185, 129, 0.25);
 }
 
@@ -203,6 +205,15 @@
   box-shadow: 0 20px 50px rgba(16, 185, 129, 0.1);
 }
 
+.cardLarge {
+  margin-top: 24px;
+  background: white;
+  border: 1px solid #d1fae5;
+  border-radius: 28px;
+  padding: 28px;
+  box-shadow: 0 20px 50px rgba(16, 185, 129, 0.1);
+}
+
 .sectionGrid {
   margin-top: 24px;
   display: grid;
@@ -219,6 +230,165 @@
   margin-top: 8px;
   color: #64748b;
   font-size: 14px;
+  line-height: 1.6;
+}
+
+.metricLabel {
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.metricValueWrap {
+  margin-top: 20px;
+}
+
+.metricValue {
+  font-size: 32px;
+  font-weight: 900;
+}
+
+.metricUnit {
+  margin-left: 4px;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.metricCaption {
+  margin-top: 12px;
+  color: #047857;
+  font-weight: 900;
+}
+
+.barChart {
+  margin-top: 32px;
+  height: 280px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  gap: 24px;
+}
+
+.barItem {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.barTrack {
+  width: 100%;
+  max-width: 80px;
+  height: 220px;
+  border-radius: 24px;
+  border: 1px solid #d1fae5;
+  background: #ecfdf5;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+.barFill {
+  width: 100%;
+  border-radius: 24px;
+  background: linear-gradient(to top, #059669, #6ee7b7);
+}
+
+.barLabel {
+  margin-top: 16px;
+  font-weight: 900;
+}
+
+.barValue {
+  margin-top: 4px;
+  color: #64748b;
+  font-weight: 700;
+}
+
+.scopeLayout {
+  margin-top: 40px;
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 32px;
+  align-items: center;
+}
+
+.scopeDonut {
+  position: relative;
+  width: 192px;
+  height: 192px;
+  border-radius: 50%;
+  background: conic-gradient(#059669 0 92%, #a7f3d0 92% 100%);
+}
+
+.scopeDonutInner {
+  position: absolute;
+  inset: 48px;
+  border-radius: 50%;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #047857;
+  font-size: 32px;
+  font-weight: 900;
+}
+
+.scopeRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #ecfdf5;
+}
+
+.scopeLabelWrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 900;
+}
+
+.scopeDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.scopeValue {
+  color: #047857;
+  font-weight: 900;
+}
+
+.monthList {
+  margin-top: 24px;
+}
+
+.monthItem {
+  margin-bottom: 18px;
+}
+
+.monthHeader {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.monthTrack {
+  height: 12px;
+  border-radius: 999px;
+  background: #ecfdf5;
+  overflow: hidden;
+}
+
+.monthFill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(to right, #6ee7b7, #059669);
 }
 
 .uploadBox {
@@ -229,6 +399,7 @@
   padding: 40px 24px;
   text-align: center;
   cursor: pointer;
+  display: block;
 }
 
 .uploadIcon {
@@ -297,6 +468,66 @@
   font-weight: 800;
 }
 
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(15, 23, 42, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.modal {
+  width: 100%;
+  max-width: 520px;
+  background: white;
+  border-radius: 28px;
+  padding: 28px;
+  border: 1px solid #d1fae5;
+  box-shadow: 0 30px 80px rgba(16, 185, 129, 0.25);
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modalHeader h2 {
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.modalHeader button {
+  border: none;
+  background: #ecfdf5;
+  color: #047857;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.modalDesc {
+  margin-top: 12px;
+  color: #64748b;
+  line-height: 1.7;
+  font-size: 14px;
+}
+
+.errorMessage {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #fef2f2;
+  color: #dc2626;
+  font-size: 14px;
+  font-weight: 800;
+}
+
 @media (max-width: 1024px) {
   .heroGrid,
   .sectionGrid {
@@ -305,6 +536,11 @@
 
   .metricGrid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .scopeLayout {
+    grid-template-columns: 1fr;
+    justify-items: center;
   }
 
   .title {
@@ -323,7 +559,8 @@
 
   .heroCard,
   .summaryCard,
-  .card {
+  .card,
+  .cardLarge {
     border-radius: 24px;
     padding: 24px;
   }
@@ -338,5 +575,14 @@
 
   .outlineButton {
     display: none;
+  }
+
+  .barChart {
+    gap: 12px;
+  }
+
+  .monthHeader {
+    flex-direction: column;
+    gap: 4px;
   }
 }

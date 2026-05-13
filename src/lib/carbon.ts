@@ -1,5 +1,5 @@
 // src/lib/carbon.ts
-// 탄소 배출량 계산 엔진입니다.
+// 탄소 배출량 계산 로직
 // 활동 데이터와 배출계수를 매칭한 뒤,
 // 활동량 × 배출계수 = 탄소배출량 계산을 수행합니다.
 
@@ -25,17 +25,17 @@ export function getScope(activityType: ActivityType): ScopeType {
 
 export function calculateEmission(
   record: ActivityRecord,
-  factors: EmissionFactor[]
+  factors: EmissionFactor[],
 ): CalculatedEmission {
   const matchedFactor = factors.find(
     (factor) =>
       factor.activityType === record.activityType &&
-      factor.description === record.description
+      factor.description === record.description,
   );
 
   if (!matchedFactor) {
     throw new Error(
-      `배출계수를 찾을 수 없습니다: ${record.activityType} - ${record.description}`
+      `배출계수를 찾을 수 없습니다: ${record.activityType} - ${record.description}`,
     );
   }
 
@@ -49,7 +49,7 @@ export function calculateEmission(
 
 export function calculateAllEmissions(
   records: ActivityRecord[],
-  factors: EmissionFactor[]
+  factors: EmissionFactor[],
 ): CalculatedEmission[] {
   return records.map((record) => calculateEmission(record, factors));
 }
@@ -67,7 +67,7 @@ export function getEmissionByScope(records: CalculatedEmission[]) {
     {
       "Scope 2": 0,
       "Scope 3": 0,
-    } as Record<ScopeType, number>
+    } as Record<ScopeType, number>,
   );
 }
 
@@ -75,11 +75,11 @@ export function getEmissionByActivityType(records: CalculatedEmission[]) {
   return records.reduce(
     (acc, record) => {
       acc[record.activityType] = round(
-        (acc[record.activityType] ?? 0) + record.emission
+        (acc[record.activityType] ?? 0) + record.emission,
       );
       return acc;
     },
-    {} as Record<ActivityType, number>
+    {} as Record<ActivityType, number>,
   );
 }
 
@@ -92,6 +92,6 @@ export function getEmissionByMonth(records: CalculatedEmission[]) {
 
       return acc;
     },
-    {} as Record<string, number>
+    {} as Record<string, number>,
   );
 }
