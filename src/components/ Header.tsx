@@ -1,14 +1,27 @@
 // src/components/Header.tsx
-// 대시보드 상단 헤더 컴포넌트입니다.
-// Export, Add Data 같은 전역 액션 버튼을 담당합니다.
+// 상단 헤더 컴포넌트입니다.
+// 데이터셋 탭, Export, Add Data 버튼을 담당합니다.
 
 import styles from "@/styles/Dashboard.module.css";
 
-type HeaderProps = {
-  onAddDataClick?: () => void;
+type DatasetTab = {
+  id: string;
+  name: string;
 };
 
-export default function Header({ onAddDataClick }: HeaderProps) {
+type HeaderProps = {
+  datasets: DatasetTab[];
+  selectedDatasetId: string;
+  onSelectDataset: (id: string) => void;
+  onAddDataClick: () => void;
+};
+
+export default function Header({
+  datasets,
+  selectedDatasetId,
+  onSelectDataset,
+  onAddDataClick,
+}: HeaderProps) {
   return (
     <header className={styles.header}>
       <div className={styles.headerInner}>
@@ -18,6 +31,22 @@ export default function Header({ onAddDataClick }: HeaderProps) {
             Carbon <span>Flow</span>
           </div>
         </div>
+
+        <nav className={styles.datasetTabs}>
+          {datasets.map((dataset) => (
+            <button
+              key={dataset.id}
+              className={
+                dataset.id === selectedDatasetId
+                  ? styles.datasetTabActive
+                  : styles.datasetTab
+              }
+              onClick={() => onSelectDataset(dataset.id)}
+            >
+              {dataset.name}
+            </button>
+          ))}
+        </nav>
 
         <div className={styles.headerActions}>
           <button className={styles.outlineButton}>Export</button>
